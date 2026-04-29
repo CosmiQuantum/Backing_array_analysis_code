@@ -1,7 +1,5 @@
 # Backing_array_analysis_code
 
-# Backing_array_analysis_code
-
 ## Event Building & External Sorting for Timing Data (CSV / DAT to ROOT)
 
 This repository provides high-performance C++ tools to process large-scale timing data from CAEN/Janus systems and convert large CSV or binary DAT files into structured ROOT files for physics analysis.
@@ -99,12 +97,6 @@ Use DAT input only for:
 
 - C++17 compiler
 - ROOT 6.x
-
-Example ROOT environment setup:
-
-```bash
-source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc11-opt/setup.sh
-```
 
 ---
 
@@ -451,5 +443,4 @@ Planned or possible improvements include:
 
 ## Author
 
-Pratyush Patel
-Northwestern University
+Pratyush Patel, Northwestern University
