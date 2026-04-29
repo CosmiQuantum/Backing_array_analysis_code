@@ -9,6 +9,8 @@ External merge sort (memory-efficient for large datasets)
 Event building using time-window clustering
 Ring mapping (Board_Id, CH_Id → Ring)
 ROOT TTree output for physics analysis
+
+
 🚀 Features
 ✅ Supports CSV and binary DAT input
 ✅ Handles very large files via external sort (chunk + k-way merge)
@@ -19,6 +21,7 @@ t_abs_us = TStamp_us + 0.0005 × ToA_LSB
 ✅ Event grouping based on configurable time window
 ✅ Ring mapping for detector geometry
 ✅ ROOT output for downstream analysis
+
 ⚠️ Known Limitation: DAT Input & Ring Identification
 ❌ Current Status
 Ring identification does NOT work correctly for DAT input
@@ -61,27 +64,32 @@ Improve DAT parsing performance
 C++17 compiler
 ROOT (tested with ROOT 6.x)
 
-Load ROOT environment:
-
-source /cvmfs/sft.cern.ch/lcg/views/LCG_105/x86_64-el9-gcc11-opt/setup.sh
 🔧 Compilation
 g++ -O2 -std=c++17 csv_or_dat_to_root_events_external_sort_with_ring.cpp \
     $(root-config --cflags --libs) \
     -o csv_or_dat_to_root_events_external_sort_with_ring
+
+    
 ▶️ Usage
 ./csv_or_dat_to_root_events_external_sort_with_ring \
     <input.(csv|dat)> \
     <output.root> \
     <tol_LSB> \
     [chunk_rows]
+
+    
 Parameters
 Argument	Description
 input	CSV or DAT file
 output.root	Output ROOT file
 tol_LSB	Time window in LSB units (1 LSB = 0.5 ns)
 chunk_rows	Rows per chunk (default: 300000)
+
+
 🧪 Example Workflows
 🔹 DAT → ROOT (100 ns window)
+
+
 ./csv_or_dat_to_root_events_external_sort_with_ring \
 DATA/18_February_2026/Thresh230-5min/Run1_list.dat \
 Thresh230-5min_100ns_dat.root \
@@ -90,6 +98,7 @@ Thresh230-5min_100ns_dat.root \
 👉 200 LSB = 100 ns
 
 🔹 CSV → ROOT (10 ns window)
+
 ../../csv_to_root_events_timestamp_external_sort_with_ring \
 ../../DATA/4_March_2026/Thresh260/Run1_list.csv \
 ../../ROOT_files/4_March_2026/Thresh260-5min_10ns_grouping2.root \
@@ -105,6 +114,8 @@ After event building, generate histograms:
 input.root \
 output_hist.root \
 Events
+
+
 🎯 Purpose
 
 Analyze detector activity per event:
@@ -120,6 +131,8 @@ Event_Id
 Board_Id
 CH_Id
 Ring
+
+
 2. Remove Duplicates (Collision-Free)
 
 Within each event:
@@ -136,14 +149,20 @@ For each event:
 
 Count unique active channels
 Can be grouped by ring or board
+
+
 4. Build Histogram
 X-axis → Number of active channels per event  
 Y-axis → Number of events  
+
+
 📈 Physical Interpretation
-Region	Meaning
-Low counts	Noise / single hits
-Medium counts	Physical interactions
-High counts	Multi-scatter / pile-up
+Region	                Meaning
+Low counts	         Noise / single hits
+Medium counts	     Physical interactions
+High counts	         Multi-scatter / pile-up
+
+
 🔬 Why “Collision-Free”?
 
 Without deduplication:
@@ -154,9 +173,8 @@ Same channel firing multiple times inflates counts
 
 True detector occupancy
 Correct multiplicity
-📁 Output
 
-Produces:
+📁 Output Produces:
 
 hist_df_*.root
 
@@ -164,6 +182,8 @@ Containing:
 
 Channel multiplicity histograms
 Event occupancy distributions
+
+
 ⚠️ Important Note (DAT Input)
 
 Because DAT input lacks correct Board_Id:
@@ -173,32 +193,35 @@ Because DAT input lacks correct Board_Id:
 
 👉 Histogram is fully reliable only for CSV workflows
 
-🚀 Example Insight
-Peak at 2–3 → simple interactions  
-Long tail → complex events / pile-up  
+🚀 Example            Insight
+Peak at 2–3        simple interactions  
+Long tail         complex events / pile-up  
+
+
 🧠 How It Works
 Step 1: Chunk Processing
-Read input in chunks (chunk_rows)
-Compute absolute time
-Sort chunks
-Write temporary runs
+    Read input in chunks (chunk_rows)
+    Compute absolute time
+    Sort chunks
+    Write temporary runs
 Step 2: External Merge
-K-way merge of sorted chunks
-Global time ordering
+    K-way merge of sorted chunks
+    Global time ordering
 Step 3: Event Building
-if (t > event_start + window_us) → new event
+    if (t > event_start + window_us) → new event
 Step 4: ROOT Output
+    TTree: Events
 
-TTree: Events
+        Branch	     Description
+        TStamp_us	Base timestamp
+        ToA_LSB	     Fine timing
+        t_abs_us	Absolute time
+        Board_Id	Board index
+        CH_Id	Channel
+        Ring	Detector ring
+        Event_Id	Event grouping
 
-Branch	Description
-TStamp_us	Base timestamp
-ToA_LSB	Fine timing
-t_abs_us	Absolute time
-Board_Id	Board index
-CH_Id	Channel
-Ring	Detector ring
-Event_Id	Event grouping
+
 📁 Repository Structure
 .
 ├── csv_or_dat_to_root_events_external_sort_with_ring.cpp
@@ -207,16 +230,20 @@ Event_Id	Event grouping
 ├── dat_to_root_events_timestamp.cxx
 ├── make_hist_df_unique_active_collision_free.cpp
 └── README.md
+
 ⚡ Performance Notes
 Designed for GB-scale datasets
 External sort avoids memory overflow
 DAT parsing slower due to synchronization scanning
+
+
 Recommended:
 SSD storage
 Larger chunk_rows
 Avoid network file systems if possible
-👤 Author
 
+
+👤 Author
 Pratyush Patel
 Northwestern University / Fermilab
 SuperCDMS / NEXUS
