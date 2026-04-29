@@ -403,48 +403,49 @@ int main(int argc, char **argv) {
   tree->Branch("Ring", &Ring);
   tree->Branch("Event_Id", &Event_Id);
 
-  //bool have_last = false;
-  //double last_hit_us = 0.0;
-  //ll current_event_id = 1;
+  bool have_last = false;
+  double last_hit_us = 0.0;
+  ll current_event_id = 1;
 
-  //while (!pq.empty()) {
-  //  HeapItem top = pq.top();
-  //  pq.pop();
+  while (!pq.empty()) {
+    HeapItem top = pq.top();
+    pq.pop();
 
-  //  const Row &r = top.row;
+    const Row &r = top.row;
 
-    // Event grouping on globally sorted stream
-   // if (!have_last) {
-   //   current_event_id = 1;
-   //   last_hit_us = r.t_abs_us;
-   //   have_last = true;
-   // } else {
-   //   if (r.t_abs_us > last_hit_us + window_us) {
-   //     current_event_id++;
-   //   }
-   //   last_hit_us = r.t_abs_us;
-   // }
-   bool have_event = false;
-   double event_start_us = 0.0;
-   ll current_event_id = 1;
-
-   while (!pq.empty()) {
-     HeapItem top = pq.top();
-     pq.pop();
-
-     const Row &r = top.row;
-
-     if (!have_event) {
-       current_event_id = 1;
-       event_start_us = r.t_abs_us;   // anchor at first hit
-       have_event = true;
-     } else {
-     // start a NEW event only when we cross the window from the FIRST hit
-     if (r.t_abs_us > event_start_us + window_us) {
-       current_event_id++;
-       event_start_us = r.t_abs_us; // re-anchor to this hit
+    //Event grouping on globally sorted stream
+    if (!have_last) {
+      current_event_id = 1;
+      last_hit_us = r.t_abs_us;
+      have_last = true;
+    } else {
+      if (r.t_abs_us > last_hit_us + window_us) {
+        current_event_id++;
       }
+      last_hit_us = r.t_abs_us;
     }
+   
+   //bool have_event = false;
+   //double event_start_us = 0.0;
+   //ll current_event_id = 1;
+
+   //while (!pq.empty()) {
+   //  HeapItem top = pq.top();
+   //  pq.pop();
+
+   //  const Row &r = top.row;
+
+   //  if (!have_event) {
+   //    current_event_id = 1;
+   //    event_start_us = r.t_abs_us;   // anchor at first hit
+   //    have_event = true;
+   //  } else {
+   //  // start a NEW event only when we cross the window from the FIRST hit
+   //  if (r.t_abs_us > event_start_us + window_us) {
+   //    current_event_id++;
+   //    event_start_us = r.t_abs_us; // re-anchor to this hit
+   //   }
+   // }
 
   // assign event id to this row (wherever you store it)
   // out_row.Event_Id = current_event_id;
