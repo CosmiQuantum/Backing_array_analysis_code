@@ -186,7 +186,12 @@ Here:
 
 ## Histogram Generation: Unique Active Channels per Event
 
-After event building, histograms can be generated using:
+
+For every event, the code counts how many unique channels fired in each ring. Then for each ring, it records whether that event passed the thresholds: at least 1 channel, at least 2 channels, at least 3 channels, up to at least 8 channels.
+
+So the final output tells you:
+
+For each ring, how many events had ≥1, ≥2, ≥3 … ≥8 active channels. After event building, histograms can be generated using:
 
 ```bash
 ./make_hist_df_unique_active_collision_free \
